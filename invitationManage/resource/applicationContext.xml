@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:aop="http://www.springframework.org/schema/aop"
+xmlns:tx="http://www.springframework.org/schema/tx"
+xmlns:context="http://www.springframework.org/schema/context"
+xsi:schemaLocation=
+"http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+http://www.springframework.org/schema/context
+http://www.springframework.org/schema/context/spring-context-4.0.xsd
+http://www.springframework.org/schema/aop
+http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+http://www.springframework.org/schema/tx
+http://www.springframework.org/schema/tx/spring-tx-4.0.xsd"
+default-autowire="byName" default-lazy-init="true">
+	
+	<!--配置hibernate的数据源 -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="jdbcUrl" value="jdbc:mysql://localhost:3306/kaoshi_bbs?charactorEncoding=utf8"/>
+		<property name="driverClass" value="com.mysql.jdbc.Driver"/>
+		<property name="user" value="root" />
+		<property name="password" value="root"/>
+	</bean>
+	<!--配置hibernate的sessionFactory,如果使用映射的配置文件，就需要写-->
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"/>
+		<!-- 使用映射文件写的 -->
+		<property name="mappingLocations">
+			<list>
+				<value>classpath:cn/ljxt/model/invitation.hbm.xml</value>
+				<value>classpath:cn/ljxt/model/reply.hbm.xml</value>
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.format_sql">true</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+			</props>
+		</property>
+	</bean>
+	<!-- 配置事务 -->
+<bean id="txManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+	<property name="sessionFactory" ref="sessionFactory"/>
+</bean>
+
+<tx:advice id="txAdvice" transaction-manager="txManager">
+	<tx:attributes>
+		<tx:method name="get*" read-only="true"/>
+		<tx:method name="*"/>
+	</tx:attributes>
+</tx:advice>
+
+<!-- 配置AOP -->
+<aop:config>
+	<aop:pointcut expression="execution(* cn.ljxt.service.impl.*.*(..))" id="pointcut"/>
+	<aop:advisor advice-ref="txAdvice" pointcut-ref="pointcut"/>
+</aop:config>
+
+<!-- 配置invitationDao -->
+<bean id="invitationDao" class="cn.ljxt.dao.impl.InvitationDaoImpl">
+	<property name="sessionFactory" ref="sessionFactory"/>
+</bean>
+
+<!-- 配置invitationService -->
+<bean id="invitationService" class="cn.ljxt.service.impl.InvitationServiceImpl">
+	<property name="dao" ref="invitationDao"/>
+</bean>
+
+<!--配置queryInvitationAction -->
+<bean id="queryInvitationAction" class="cn.ljxt.action.QueryInvitationAction">
+	<property name="invitationService" ref="invitationService"/>
+</bean>
+
+<!--配置queryReplyAction -->
+<bean id="queryReplyAction" class="cn.ljxt.action.QueryReplyAction">
+	<property name="invitationService" ref="invitationService"/>
+</bean>
+	
+</beans>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<constant name="struts.action.excludePattern" value="/static/.*?"/>
+
+	<package name="default" extends="struts-default">
+		<action name="queryMessage" class="queryInvitationAction" method="queryMessages">
+			<result name="success">/index.jsp</result>
+		</action>
+	
+		<action name="queryReply" class="queryReplyAction" method="queryReply">
+			<result name="success">/replyList.jsp</result>
+		</action>
+		
+		<action name="deleteMessage" class="queryInvitationAction" method="delete">
+			
+		</action>
+		
+		<action name="addReply" class="queryReplyAction" method="add"></action>
+	</package>
+	
+	
+</struts>

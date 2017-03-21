@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="cn.ljxt.model">
+	<class name="Invitation" table="invitation" >
+		<id name="id" column="id" type="long">
+			<generator class="increment"/>
+		</id>
+		<property name="title" column="title" type="string" />
+		<property name="summary" column="summary" type="string" />
+		<property name="author" column="author" type="string"/>
+		<property name="date" column="createdate" type="java.sql.Date"/>
+		
+	</class>
+	
+</hibernate-mapping>
